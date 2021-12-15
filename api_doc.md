@@ -5,7 +5,7 @@
 `GET` ➡ /api/v1/users/{userId}/projects
 #### Description
 ```
-This EP presents the projects associated to a user
+Presents the projects associated to a user
 ```
 
 ## SPECIFIC PROJECT
@@ -13,7 +13,7 @@ This EP presents the projects associated to a user
 `GET` ➡ /api/v1/users/{userId}/projects/{projectId}
 #### Description
 ```
-This EP shows a specific project for the specific user
+Shows a specific project for the specific user
 ```
 
 ## TIME CODING FOR A SPECIFIC PROJECT
@@ -21,7 +21,7 @@ This EP shows a specific project for the specific user
 `GET` ➡ /api/v1/users/{userId}/projects/{projectId}/time_coding
 #### Description
 ```
-This EP shows the time spended in a specific project
+Shows the time spended in a specific project
 ```
 
 ## LANGUAGES IMPLEMENTED IN A SPECIFIC PROJECT
@@ -29,7 +29,7 @@ This EP shows the time spended in a specific project
 `GET` ➡ /api/v1/users/{userId}/projects/{projectId}/languages
 #### Description
 ```
-This EP gives statistics about the languages that the user has used in the project
+Statistics about the languages that the user has used in the project
 ```
 
 ## OS USED
@@ -53,7 +53,7 @@ This EP shows the time that a user has spended in total
 `GET` ➡ /api/v1/users/{userId}/languages
 #### Description
 ```
-This EP presents the languages that a user has used in his/her project
+The languages that a user has used in his/her project
 ```
 
 ## STATISTICS
@@ -85,7 +85,7 @@ A general view of all users
 `GET` ➡ /api/v1/languages/{languageId}
 #### Description
 ```
-the languages more used in the community
+The languages more used in the community
 ```
 
 ## LEADERBOARD BY LANGUAGES
@@ -93,5 +93,5 @@ the languages more used in the community
 `GET` ➡ /api/v1/languages/{languageId}/leaderboard
 #### Description
 ```
-the leaders in the elected language
+The leaders in the chosen language
 ```
