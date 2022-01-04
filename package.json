@@ -2,35 +2,24 @@
   "name": "ms-plugins",
   "version": "1.0.0",
   "description": "",
-  "main": "./src/server.js",
+  "main": "index.js",
   "scripts": {
-    "dev": "nodemon ./src/server.js",
-    "start": "node ./src/server.js",
-    "lint": "eslint"
+    "dev": "nodemon --ext js,hbs",
+    "lint": "standard",
+    "lint-fix": "standard --fix"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Platzi-Master-C8/MS-Plugins.git"
   },
-  "keywords": [],
   "author": "Cesar Velandia <cesarmvelandiaf@gmail.com>",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/Platzi-Master-C8/MS-Plugins/issues"
-  },
-  "homepage": "https://github.com/Platzi-Master-C8/MS-Plugins#readme",
-  "dependencies": {
-    "@hapi/hapi": "^20.2.1"
-  },
+  "license": "MIT",
   "devDependencies": {
-    "eslint": "^8.4.0",
-    "eslint-config-prettier": "^8.3.0",
-    "eslint-plugin-prettier": "^4.0.0",
     "faker": "^5.5.3",
     "nodemon": "^2.0.15",
-    "prettier": "^2.5.1"
+    "standard": "^16.0.4"
   },
-  "engines": {
-    "node": "16.x"
+  "dependencies": {
+    "@hapi/hapi": "^20.2.1"
   }
 }

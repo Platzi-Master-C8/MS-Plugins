@@ -1,37 +1,17 @@
-const hapi = require('@hapi/hapi');
-const LanguagesService = require('./../services/languages.service')
+'use strict'
 
-const service = new LanguagesService();
+const languages = require('../controllers/languages')
 
-const basePath = '/api/v1/languages';
-
-const routes = (server) => {
-
-  server.route({
+module.exports = [
+  {
     method: 'GET',
-    path: basePath + '/',
-    handler: async (request, h) => {
-      return await service.find();
-    }
-  });
+    path: '/languages',
+    handler: languages.languages,
+  },
 
-  server.route({
+  {
     method: 'GET',
-    path: basePath + '/{langid}',
-    handler: async (request, h) => {
-      const { langid } = request.params;
-      return await service.findOne(langid);
-    }
-  });
-
-  server.route({
-    method: 'GET',
-    path: basePath + '/{langid}/leaderboard',
-    handler: async (request, h) => {
-      const { langid } = request.params;
-      return await service.findLeader(langid);
-    }
-  });
-};
-
-module.exports = routes;
+    path: '/languages/{langid}',
+    handler: languages.specificLanguage,
+  },
+]
