@@ -6,10 +6,8 @@ async function languages (req, h) {
 }
 
 async function specificLanguage (req, h) {
-  // const { langid } = request.params;
-  // return await service.findOne(langid);
-  const name = req.params.langid;
-  return await h.response(`specific lang: ${name}`)
+  const languages = await req.mongo.db.collection().findOne({})
+  return languages
 }
 
 module.exports = {
