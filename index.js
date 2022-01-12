@@ -1,9 +1,8 @@
 'use strict'
 
 const Hapi = require('@hapi/hapi');
+const hapiMongo = require('hapi-mongodb')
 const languagesRoutes = require('./routes/languages.route');
-// const leadersRoutes = require('./routes/leaders.route')
-// const usersRoutes = require('./routes/users.route')
 
 // Server definition
 const server = Hapi.server({
@@ -15,9 +14,18 @@ const server = Hapi.server({
 async function init() {
   try {
 
+    await server.register({
+      plugin: hapiMongo,
+      options: {
+        url: 'mongodb+srv://<username>:<password>@cluster0.nyfug.mongodb.net/myFirstDatabase?retryWrites=true&w=majority',
+        settings: {
+          useUnifiedTopology: true
+        },
+        decorate: true
+      }
+    });
+
     server.route(languagesRoutes)
-    // server.route(leadersRoutes)
-    // server.route(usersRoutes)
 
     await server.start()
     console.log(`Server launched at: ${server.info.uri}`)
