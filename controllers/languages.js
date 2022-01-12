@@ -37,7 +37,7 @@ async function createLanguage (req, h) {
 module.exports = {
   getLanguages,
   updateLanguages,
-  getSpecificLanguage,  
+  getSpecificLanguage,
   updateSpecificLanguage,
   createLanguage
 }

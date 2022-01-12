@@ -29,6 +29,7 @@ async function init() {
 
     await server.start()
     console.log(`Server launched at: ${server.info.uri}`)
+
   } catch (error) {
     console.error(error)
     process.exit(1)
