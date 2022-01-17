@@ -6,12 +6,30 @@ module.exports = [
   {
     method: 'GET',
     path: '/languages',
-    handler: languages.languages,
+    handler: languages.getLanguages,
+  },
+
+  {
+    method: 'PUT',
+    path: '/languages',
+    handler: languages.updateLanguages,
   },
 
   {
     method: 'GET',
-    path: '/languages/{langid}',
-    handler: languages.specificLanguage,
+    path: '/languages/{id}',
+    handler: languages.getSpecificLanguage,
+  },
+
+  {
+    method: 'PUT',
+    path: '/languages/{langId}',
+    handler: languages.updateSpecificLanguage,
+  },
+
+  {
+    method: 'POST',
+    path: '/languages',
+    handler: languages.createLanguage,
   },
 ]
