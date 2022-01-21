@@ -20,6 +20,7 @@
     "standard": "^16.0.4"
   },
   "dependencies": {
+    "@hapi/basic": "^6.0.0",
     "@hapi/hapi": "^20.2.1",
     "hapi-mongodb": "^10.0.3"
   }
