@@ -1,16 +1,18 @@
 'use strict'
 
 const projects = require('../controllers/projects');
+const { url } = require('../utils/mainRoute');
+
 
 module.exports = [
     {
         method: 'GET',
-        path: '/users/{userId}/projects',
+        path: `${url}/{userId}/projects`,
         handler: projects.getProjects
     },
     {
         method: 'POST',
-        path: '/users/{userId}/projects',
+        path: `${url}/{userId}/projects`,
         handler: projects.createProject
     }
 ]

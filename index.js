@@ -2,7 +2,6 @@
 
 const Hapi = require('@hapi/hapi');
 const hapiMongo = require('hapi-mongodb');
-const languagesRoutes = require('./routes/languages.route');
 const usersRoutes = require('./routes/users.route');
 const statisticsRoutes = require('./routes/statistics.route');
 const projectsRoutes = require('./routes/projects.route');
@@ -23,7 +22,7 @@ async function init() {
     await server.register({
       plugin: hapiMongo,
       options: {
-        url: 'mongodb+srv://plugins:zB1twnFr90JbWgei@cluster0.nyfug.mongodb.net/integrations-team?retryWrites=true&w=majority',
+        url: ' ',
         settings: {
           useUnifiedTopology: true
         },
@@ -31,7 +30,6 @@ async function init() {
       }
     });
 
-    server.route(languagesRoutes)
     server.route(usersRoutes)
     server.route(statisticsRoutes)
     server.route(projectsRoutes)
