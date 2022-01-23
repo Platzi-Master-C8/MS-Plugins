@@ -1,0 +1,12 @@
+require('dotenv').config();
+
+const config = {
+  dbUser: process.env.DB_USER,
+  dbPwd: process.env.DB_PASSWORD,
+  dbHost: process.env.DB_HOST,
+  dbName: process.env.DB_NAME,
+}
+
+module.exports = {
+  config,
+}

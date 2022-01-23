@@ -23,7 +23,7 @@ module.exports = [
 
   {
     method: 'PUT',
-    path: '/languages/{langId}',
+    path: '/languages/{id}',
     handler: languages.updateSpecificLanguage,
   },
 

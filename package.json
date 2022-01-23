@@ -21,6 +21,8 @@
   },
   "dependencies": {
     "@hapi/hapi": "^20.2.1",
-    "hapi-mongodb": "^10.0.3"
+    "dotenv": "^14.1.0",
+    "hapi-mongodb": "^10.0.3",
+    "joi": "^17.5.0"
   }
 }

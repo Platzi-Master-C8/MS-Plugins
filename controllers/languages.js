@@ -3,10 +3,7 @@
 // GET languages/
 async function getLanguages (req, h) {
   // return await h.response('Languages')
-  const offset = Number(req.query.offset) || 0;
-
-  const users = await req.mongo.db.collection('users').find({}).sort({name:1}).toArray();
-
+  const users = await req.mongo.db.collection('users').find().sort({name:1}).toArray();
   return users;
 }
 
@@ -20,8 +17,8 @@ async function getSpecificLanguage (req, h) {
   // return await h.response('Get specific language')
   const id = req.params.id
   const ObjectID = req.mongo.ObjectID;
-  const movie = await req.mongo.db.collection('users').findOne({_id: new ObjectID(id)},{projection:{name:1,email:1}});
-  return movie;
+  const users = await req.mongo.db.collection('users').findOne({_id: new ObjectID(id)},{projection:{name:1,email:1}});
+  return users;
 }
 
 
