@@ -1,5 +1,6 @@
 'use strict'
 
+const Joi = require('joi');
 const languages = require('../controllers/languages')
 
 module.exports = [
