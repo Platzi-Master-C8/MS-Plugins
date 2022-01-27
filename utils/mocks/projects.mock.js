@@ -1,5 +1,4 @@
 const projectsMock = {
-    userId: new ObjectID(userId),
     projects: [
       {
         id: 0,
