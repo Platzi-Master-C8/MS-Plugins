@@ -22,7 +22,11 @@ async function init() {
     await server.register({
       plugin: hapiMongo,
       options: {
+<<<<<<< HEAD
         url: 'mongodb+srv://db_user_platzivideos:gxZR778nWCU4@cluster0.7kiey.mongodb.net/squadplugins?retryWrites=true&w=majority',
+=======
+        url: 'mongodb+srv://<userName>:<password>@cluster0.7kiey.mongodb.net/<collection>?retryWrites=true&w=majority',
+>>>>>>> fe94218e403600cc17d6649f7fec911c91016043
         settings: {
           useUnifiedTopology: true
         },
