@@ -39,11 +39,35 @@ async function createUser (req, h) {
             throw 'error, this user was created in the data base'
         }
         
+<<<<<<< HEAD
         const saveUserData = await req.mongo.db.collection('users').insertOne(data)
         const saveUserStatisticsData = await req.mongo.db.collection('statistics').insertOne( { userId: saveUserData.insertedId, ...staticsBaseSchema } )
         const saveUserProjectsData = await req.mongo.db.collection('projects').insertOne( { userId: saveUserData.insertedId, ...projectsBaseSchema } )
         const saveUserConfigData = await req.mongo.db.collection('configurations').insertOne( { userId: saveUserData.insertedId, ...configBaseSchema } )
        
+=======
+        const saveUserData = await req.mongo.db.collection('users').insertOne(user)
+        const saveUserStatisticsData = await req.mongo.db.collection('statistics').insertOne(
+            {
+                userId: saveUserData.insertedId
+            }
+        )
+        const saveUserProjectsData = await req.mongo.db.collection('projects').insertOne(
+            {
+                userId: saveUserData.insertedId
+            }
+        )
+        const saveUserConfigData = await req.mongo.db.collection('configurations').insertOne(
+            {
+                userId: saveUserData.insertedId
+            }
+        )
+       
+        await console.log(saveUserConfigData)
+        
+        // await console.log(saveUserStatisticsData)
+        // await console.log(saveUserProjectsData)
+>>>>>>> eb821ceaad9beb0206ef21e164512e530239f0ca
 
         return 'successfully saved Data'
     } catch(error) {
