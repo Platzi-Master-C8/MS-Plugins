@@ -3,8 +3,12 @@
 const Hapi = require('@hapi/hapi');
 const hapiMongo = require('hapi-mongodb');
 const cors = require('cors');
-const languagesRoutes = require('./routes/languages.route');
 const config = require('./config').config;
+const usersRoutes = require('./routes/users.route');
+const statisticsRoutes = require('./routes/statistics.route');
+const projectsRoutes = require('./routes/projects.route');
+const configurationsRoute = require('./routes/configurations.route');
+
 
 // Server definition
 const server = Hapi.server({
@@ -27,7 +31,11 @@ async function init() {
       }
     });
 
-    server.route(languagesRoutes)
+    server.route(usersRoutes)
+    server.route(statisticsRoutes)
+    server.route(projectsRoutes)
+    server.route(configurationsRoute)
+
 
     await server.start()
     console.log(`Server launched at: ${server.info.uri}`)

@@ -1,63 +1,87 @@
 'use strict'
-// GET configurations/dataToShow
-async function getDataToShow (req, h) {
-  //1.- recieve data of db
-  //2.- get and send data with message of success or error
-  return await h.response(`all config about data to show`)
-}
 
-// PUT configurations/dataToShow
-async function updateDataToShow (req, h) {
-  //const config = req.payload
-  //1.- validate data
-  //2.- save data in db
-  //3.- send message success or error
-  
-}
+const { configurationsMock } = require('../utils/mocks/configurations.mock')
 
-// GET configurations/dataToTrack
-async function getDataToTrack (req, h) {
-  //1.- recieve data of db
-  //2.- send data and message of success or error
-  return await h.response(`config about data to track`)
-}
+// GET {userId}/configurations
+async function getConfigurations (req, h) {
+  const userId = req.params.userId
 
-// PUT configurations/dataToTrack
-async function updateDataToTrack (req, h) {
-  //const config = req.payload
-  //1.- validate data
-  //2.- save data in db
-  //3.- send message success or error
+  try {
+    const ObjectID = req.mongo.ObjectID
+    const configurations = await req.mongo.db.collection('configurations').findOne({
+      userId: new ObjectID(userId)
+    })
+    if(!configurations) {
+      throw 'error in get configurations'
+    }
+
+    return configurations
+  } catch (error) {
+    console.error(error)
+    return error
+  }
 
 }
 
+// POST {userId}/configurations
+async function createConfigurations (req, h) {
+    const userId = req.params.userId
+    const userKey = req.headers.userkey
 
-// GET configurations/{config}
-async function getSpecificConfig (req, h) {
-  //const config = req.params.config;
-  //1.- review if the query is a valid data  
-  //2.- get and send data and message of success or error
-  return await h.response(`specific config about data to show/track`)
+    try {
+        const ObjectID = req.mongo.ObjectID;
+        let findUserByKey = await req.mongo.db.collection('users').find({ key: userKey }).project({ name: false, email: false, key: false })
+        const userByKey = await findUserByKey.next()
+
+        if ( ( userByKey == null ) || ( userByKey._id != userId ) ) { 
+          throw 'invalid credentials'
+        }
+        const createConfigurations = await req.mongo.db.collection('configurations').replaceOne(
+            {
+                userId: new ObjectID(userId)
+            }, { userId: new ObjectID(userId), ...configurationsMock })
+        await console.log(createConfigurations)
+
+        return 'create configurations'
+    } catch (error) {
+        console.log(error)
+        return error
+    }
 
 }
 
-// PUT configurations/{config}
-async function updatedSpecificConfig (req, h) {
-  //const config = req.params.config;
-  //1.- review if the query is a valid data  
-  //2.- save data in db
-  //3.- send message success or error
-  return await h.response(`specific config about data to show/track`)
+async function updateConfigurations (req, h) {
+  const userId = req.params.userId
+  const userKey = req.headers.userkey
+  const reqPayload = req.payload
+
+  try {
+    const ObjectID = req.mongo.ObjectID
+    let findUserByKey = await req.mongo.db.collection('users').find({ key: userKey }).project({ name: false, email: false, key: false })
+    const userByKey = await findUserByKey.next()
+
+    if ( ( userByKey == null ) || ( userByKey._id != userId ) ) { 
+      throw 'invalid credentials'
+    }
+    
+    const updateConfigurations = req.mongo.db.collection('configurations').replaceOne( { userId: new ObjectID(userId) }, { userId: new ObjectID(userId), ...reqPayload } )
+
+    if (updateConfigurations == null) {
+      throw 'error in update configurations'
+    }
+
+    return `configurations updated ${updateConfigurations}`
+  } catch (error) {
+    console.log(error)
+    return error
+  }
+
+
 
 }
-
-
 
 module.exports = {
-  getDataToShow,
-  updateDataToShow,
-  getDataToTrack,
-  updateDataToTrack,
-  getSpecificConfig,
-  updatedSpecificConfig
+  getConfigurations,
+  createConfigurations,
+  updateConfigurations
 }

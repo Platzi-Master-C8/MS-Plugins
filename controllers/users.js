@@ -1,56 +1,82 @@
 'use strict'
 
+const createKey = require('../utils/createKey');
+const { configBaseSchema } = require('../models/configurations');
+const { staticsBaseSchema } = require('../models/statistics');
+const { projectsBaseSchema } = require('../models/projects');
 
-// GET user/
+// GET /users
 async function getUser (req, h) {
-    //1.- recieve data of db
-    //2.- get and send data with message of success or error
-}
-  
-// PUT user/
-async function updateUser (req, h) {
-    //1.- validate Data
-    //2.- update in db
-    //3.- send message of success or error
+    const userKey = req.headers.userkey
+    try {
+        const user = await req.mongo.db.collection('users').findOne( { key: userKey } )
+        if(!user) {
+            throw "error in get a user";
+        }
+
+        return user
+        
+    } catch(error) {
+        console.log(error)
+        return(error)
+    }
+ 
 }
 
-// POST user/
+// POST /users
 async function createUser (req, h) {
-    //1.- validate Data
-    //2.- save in db
-    //3.- send message of success or error
+    const data = req.payload
+    data.key = createKey( data.name + data.email )
+    
+    try {
+        const findUser = await req.mongo.db.collection('users').findOne( 
+            { 
+                name: data.name,
+                email: data.email
+            }
+        )
+        if(findUser) {
+            throw 'error, this user was created in the data base'
+        }
+        
+
+        const saveUserData = await req.mongo.db.collection('users').insertOne(data)
+        const saveUserStatisticsData = await req.mongo.db.collection('statistics').insertOne( { userId: saveUserData.insertedId, ...staticsBaseSchema } )
+        const saveUserProjectsData = await req.mongo.db.collection('projects').insertOne( { userId: saveUserData.insertedId, ...projectsBaseSchema } )
+        const saveUserConfigData = await req.mongo.db.collection('configurations').insertOne( { userId: saveUserData.insertedId, ...configBaseSchema } )
+
+
+        return 'successfully saved Data'
+    } catch(error) {
+        console.log(error)
+        return error
+    }
+    
 }
 
-// DELETE user/
+// DELETE /users
 async function deleteUser (req, h) {
     //1.- validate Data
     //2.- delete in db
     //3.- send message of success or error
+    const key = {
+
+    }
+
+    try {
+        if(typeof key == 'object' && Object.keys(key).length > 0) {
+            const result = await req.mongo.db.collection('users').deleteOne( key )
+        }
+    } catch (error) {
+        
+    }
 }
   
-// GET user/{key}
-async function getSpecificData (req, h) {
-    //const config = req.params.key;
-    //1.- review if the query is a valid data  
-    //2.- get and send data and message of success or error
-    
-}
-
-// PUT user/{key}
-async function updateSpecificData (req, h) {
-    //const config = req.params.key;
-    //1.- review if the query is a valid data  
-    //2.- get and send data and message of success or error
-    
-}
   
 
 
 module.exports = {
     getUser,
-    updateUser,
     createUser,  
-    deleteUser,
-    getSpecificData,
-    updateSpecificData
+    deleteUser
 }
