@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "start": "node index.js",
     "dev": "nodemon --ext js,hbs",
     "lint": "standard",
     "lint-fix": "standard --fix"
@@ -26,5 +27,8 @@
     "dotenv": "^14.1.0",
     "hapi-mongodb": "^10.0.3",
     "joi": "^17.5.0"
+  },
+  "engines": {
+    "node": "16.x"
   }
 }

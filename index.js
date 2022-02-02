@@ -8,13 +8,19 @@ const statisticsRoutes = require('./routes/statistics.route');
 const projectsRoutes = require('./routes/projects.route');
 const configurationsRoute = require('./routes/configurations.route');
 
+const origins = [
+  '*',
+]
+
 
 // Server definition
 const server = Hapi.server({
   port: process.env.PORT || 3000,
   host: 'localhost',
   routes: {
-    cors: true,
+    cors: {
+      origin: origins,
+    },
   }
 })
 
