@@ -2,7 +2,6 @@
 
 const Hapi = require('@hapi/hapi');
 const hapiMongo = require('hapi-mongodb');
-const cors = require('cors');
 const config = require('./config').config;
 const usersRoutes = require('./routes/users.route');
 const statisticsRoutes = require('./routes/statistics.route');
@@ -14,6 +13,9 @@ const configurationsRoute = require('./routes/configurations.route');
 const server = Hapi.server({
   port: process.env.PORT || 3000,
   host: 'localhost',
+  routes: {
+    cors: true,
+  }
 })
 
 // Initializing Server
@@ -28,7 +30,7 @@ async function init() {
           useUnifiedTopology: true
         },
         decorate: true
-      }
+      },
     });
 
     server.route(usersRoutes)
