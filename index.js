@@ -16,7 +16,7 @@ const origins = [
 // Server definition
 const server = Hapi.server({
   port: process.env.PORT || 3000,
-  host: 'localhost',
+  host: process.env.HOSTNAME || 'localhost',
   routes: {
     cors: {
       origin: origins,
