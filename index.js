@@ -3,10 +3,10 @@
 const Hapi = require('@hapi/hapi');
 const hapiMongo = require('hapi-mongodb');
 const config = require('./config').config;
-const usersRoutes = require('./routes/users.route');
-const statisticsRoutes = require('./routes/statistics.route');
-const projectsRoutes = require('./routes/projects.route');
-const configurationsRoute = require('./routes/configurations.route');
+const usersRoutes = require('./routes/usersRoute');
+const statisticsRoutes = require('./routes/statisticsRoute');
+const projectsRoutes = require('./routes/projectsRoute');
+const configurationsRoute = require('./routes/configurationsRoute');
 
 const origins = [
   '*',
@@ -31,7 +31,7 @@ async function init() {
     await server.register({
       plugin: hapiMongo,
       options: {
-        url: `mongodb://${config.dbUser}:${config.dbPwd}@cluster0.7kiey.mongodb.net/${config.dbCollectionName}`,
+        url: `mongodb+srv://${config.dbUser}:${config.dbPwd}@cluster0.7kiey.mongodb.net/${config.dbCollectionName}`,
         settings: {
           useUnifiedTopology: true
         },
