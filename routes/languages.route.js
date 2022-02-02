@@ -7,7 +7,10 @@ module.exports = [
   {
     method: 'GET',
     path: '/languages',
-    handler: languages.getLanguages,
+    options: {
+      cors: true,
+      handler: languages.getLanguages,
+    }
   },
 
   {

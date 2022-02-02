@@ -2,6 +2,7 @@
 
 const Hapi = require('@hapi/hapi');
 const hapiMongo = require('hapi-mongodb');
+const cors = require('cors');
 const languagesRoutes = require('./routes/languages.route');
 const config = require('./config').config;
 
