@@ -31,7 +31,7 @@ async function init() {
     await server.register({
       plugin: hapiMongo,
       options: {
-        url: `mongodb+srv://${config.dbUser}:${config.dbPwd}@${config.dbHost}/${config.dbName}`,
+        url: `mongodb+srv://${config.dbUser}:${config.dbPwd}@cluster0.7kiey.mongodb.net/${config.dbCollectionName}`,
         settings: {
           useUnifiedTopology: true
         },
