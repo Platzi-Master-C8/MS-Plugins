@@ -33,7 +33,7 @@ async function updateStatistics (req, h) {
         let findUserByKey = await req.mongo.db.collection('users').find({ key: userKey }).project({ name: false, email: false, key: false })
         const userByKey = await findUserByKey.next()
 
-        if ( userByKey._id != userId ) { 
+        if ( ( userByKey == null ) || ( userByKey._id != userId ) ) { 
             throw 'invalid credentials'
         }
         if(!queryData) {

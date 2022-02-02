@@ -13,5 +13,10 @@ module.exports = [
         method: 'POST',
         path: `${url}/{userId}/configurations`,
         handler: configurations.createConfigurations
+    },
+    {
+        method: 'PUT',
+        path: `${url}/{userId}/configurations`,
+        handler: configurations.updateConfigurations
     }
 ]

@@ -14,5 +14,10 @@ module.exports = [
         method: 'POST',
         path: `${url}/{userId}/projects`,
         handler: projects.createProject
+    },
+    {
+        method: 'PUT',
+        path: `${url}/{userId}/projects`,
+        handler: projects.updateProjects
     }
 ]
