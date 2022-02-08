@@ -1,18 +1,36 @@
 'use strict'
 
 const { statisticsMock } = require('../utils/mocks/statistics.mock');
+const getTotalDevelopment = require('../utils/statistics/getTotalDevelopment');
+const getTotalLanguages = require('../utils/statistics/getTotalLanguages');
+const getWorkspaces = require('../utils/statistics/getWorkspaces');
 
 // GET {userId}/statistics
 async function getStatistics (req, h) {
     const userId = req.params.userId
     try {
         const ObjectID = req.mongo.ObjectID;
-        const statistics = await req.mongo.db.collection('statistics').findOne( { userId: new ObjectID(userId) } )
-        if(!statistics) {
+        const statisticsDoc = await req.mongo.db.collection('statistics').findOne( { userId: new ObjectID(userId) } )
+        
+        if(!statisticsDoc) {
             throw "error in get statistics";
         }
+        
+        const statisticsDocArr = Object.entries(statisticsDoc)
+      
+        let statisticsLenguage = getTotalLanguages(statisticsDocArr)
+        let statisticsDevelopment = getTotalDevelopment(statisticsDocArr)
+        let statisticsWorkspaces = getWorkspaces(statisticsDocArr)
+        
 
-        return statistics
+        const data = {
+            languages: statisticsLenguage,
+            workspaces: statisticsWorkspaces,
+            totalDevelopment: statisticsDevelopment,
+            lastTracking: statisticsDoc.lastTracking
+        }
+
+        return data
         
     } catch(error) {
         console.log(error)
@@ -24,8 +42,7 @@ async function getStatistics (req, h) {
 // PUT {userId}/statistics
 async function updateStatistics (req, h) {
     const userId = req.params.userId
-    const reqPayload = req.payload ? Object.entries(req.payload) : null
-    const queryData = req.query.data
+    const reqPayload = req.payload
     const userKey = req.headers.userkey
 
     try {
@@ -36,50 +53,55 @@ async function updateStatistics (req, h) {
         if ( ( userByKey == null ) || ( userByKey._id != userId ) ) { 
             throw 'invalid credentials'
         }
-        if(!queryData) {
-            throw 'add query data to update the information'
-        }
         if(!reqPayload) {
             throw 'add body data to update the information'
         }
         
-        const statistics = await req.mongo.db.collection('statistics').findOne({ userId: new ObjectID(userId) }) 
-        const newData = await Object.entries(statistics)
+        const statisticsDoc = await req.mongo.db.collection('statistics').findOne({ userId: new ObjectID(userId) }) 
+        let statisticsDocArr = await Object.entries(statisticsDoc)
         
-        await queryData.forEach(element => {
-            let indexCurrentData = newData.findIndex( array => array[0] == element )
-            let indexNewData = reqPayload.findIndex( array => array[0] == element )
+        let statisticsIndex = statisticsDocArr.findIndex((element) => element[0] == "languages")
+        let lasTrackingIndex = statisticsDocArr.findIndex((element) => element[0] == "lastTracking")
 
-            if (indexCurrentData == -1 ||  indexNewData == -1) {
-                return 'no match between query and statistics document or the new data'
-            } 
+        reqPayload.statistics.forEach(data => {
 
-            if(element == 'langueages' || element == 'os') {
-                reqPayload[indexNewData][1].forEach(data => {
-                    let index = newData[indexCurrentData][1].findIndex( actualData => actualData["name"] == data["name"] )
-                    if(index == -1) {
-                        newData[indexCurrentData][1].push(
-                            data
-                        )
-                        return
+            let addedInStatics= false;
+            statisticsDocArr[statisticsIndex][1].forEach((statistic, index) => { 
+                if(data.lan == statistic.lan && data.workspace == statistic.workspace && data.fileName == statistic.fileName && data.os == statistic.os) {
+                    
+                    statisticsDocArr[statisticsIndex][1][index].stamps.push(data.stamps)
+
+
+                    statisticsDocArr[statisticsIndex][1][index] = {
+                        ...statisticsDocArr[statisticsIndex][1][index],
+                        time: statisticsDocArr[statisticsIndex][1][index].time + data.time,
                     }
-    
-                    newData[indexCurrentData][1][index] = {
-                        ...newData[indexCurrentData][1][index],
-                        time: newData[indexCurrentData][1][index].time + data.time
+
+                    addedInStatics = true
+                    return
+                } 
+            })
+
+            if(!addedInStatics) {
+                statisticsDocArr[statisticsIndex][1].push(
+                    {
+                        ...data,
+                        stamps: [data.stamps]
                     }
-    
-                })
-            }
+                )
+                addedInStatics = false
 
-            if(element == 'development') {
-                newData[indexCurrentData][1].totalTime = newData[indexCurrentData][1].totalTime + reqPayload[indexNewData][1].totalTime
-
+                return
             }
+        })
+        
+        let dataIndex = reqPayload.statistics.length - 1
+        statisticsDocArr[lasTrackingIndex][1] = reqPayload.statistics[dataIndex].stamps.end
            
-        });
+     
 
-        const updateStatistics = await req.mongo.db.collection('statistics').replaceOne( { userId: new ObjectID(userId) }, Object.fromEntries(newData))
+        const updateStatistics = await req.mongo.db.collection('statistics').replaceOne( { userId: new ObjectID(userId) }, Object.fromEntries(statisticsDocArr))
+
         return `statistics updated ${updateStatistics}`
 
 
@@ -91,6 +113,7 @@ async function updateStatistics (req, h) {
     
    
 }
+
 
 // POST {userId}/statistics
 async function createStatistics (req, h) {

@@ -1,6 +1,6 @@
 const statisticsMock = {
     lastTracking: new Date(),
-    langueages: [
+    languages: [
       { name: 'JS', time: 12.5 },
       { name: 'Rust', time: 25 },
       { name: 'php', time: 25 },
