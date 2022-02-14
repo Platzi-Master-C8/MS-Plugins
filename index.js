@@ -20,6 +20,7 @@ const server = Hapi.server({
   routes: {
     cors: {
       origin: origins,
+      additionalExposedHeaders: ['Accept'],
     },
   }
 })
