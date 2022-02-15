@@ -1,3 +1,7 @@
+const secondsToMinutes = require('../secondsToMinutes')
+const getColor = require('../getColor')
+const setLanguageName = require('../setLanguageName')
+
 module.exports = function getWorkspaces(arrayDocData) {
     languagesIndex = arrayDocData.findIndex(element => element[0] == 'languages')
 
@@ -14,31 +18,44 @@ module.exports = function getWorkspaces(arrayDocData) {
             newData.push({
                 workspace: statistics.workspace,
                 languages: [{
-                    lan: statistics.lan,
-                    time: statistics.time
+                    // set new Language name
+                    lan: setLanguageName(statistics.lan),
+                    color: getColor(statistics.lan),
+                    // pass minutes to seconds
+                    time: secondsToMinutes(statistics.time)
                 }],
-                totalDevelopment: statistics.time
+                // pass minutes to seconds
+                totalDevelopment: secondsToMinutes(statistics.time)
             })
             
         } else {
-            let newLanguageIndex =  newData[newDataIndex].languages.findIndex(element => element.lan === statistics.lan)
+            // set new Language name for the current stadistic
+            let newLanguageIndex =  newData[newDataIndex].languages.findIndex(element => {
+                let currentLanguageName = setLanguageName(statistics.lan)
+                return element.lan == currentLanguageName
+            })
             
             if(newLanguageIndex == -1) {
                 newData[newDataIndex].languages.push({
-                    lan: statistics.lan,
-                    time: statistics.time
+                    // set new Language name
+                    lan: setLanguageName(statistics.lan),
+                    color: getColor(statistics.lan),
+                    // pass minutes to seconds
+                    time: secondsToMinutes(statistics.time)
                 })
 
             } else {
                 newData[newDataIndex].languages[newLanguageIndex] = {
-                    lan: statistics.lan,
-                    time: newData[newDataIndex].languages[newLanguageIndex].time + statistics.time 
+                    ...newData[newDataIndex].languages[newLanguageIndex],
+                    // pass minutes to seconds
+                    time: newData[newDataIndex].languages[newLanguageIndex].time + secondsToMinutes(statistics.time)
                 }
             }
 
             newData[newDataIndex] = {
                 ...newData[newDataIndex],
-                totalDevelopment: newData[newDataIndex].totalDevelopment + statistics.time
+                // pass minutes to seconds
+                totalDevelopment: newData[newDataIndex].totalDevelopment +  secondsToMinutes(statistics.time)
             }
         }
         

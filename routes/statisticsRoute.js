@@ -9,14 +9,16 @@ module.exports = [
         path: `${url}/{userId}/statistics`,
         handler: statistics.getStatistics
     },
-    {
-        method: 'POST',
-        path: `${url}/{userId}/statistics`,
-        handler: statistics.createStatistics
-    },
+    // {
+    //     method: 'POST',
+    //     path: `${url}/{userId}/statistics`,
+    //     handler: statistics.createStatistics
+    // },
     {
         method: 'PUT',
         path: `${url}/{userId}/statistics`,
         handler: statistics.updateStatistics
     }
 ]
+
+

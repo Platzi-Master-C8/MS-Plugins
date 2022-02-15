@@ -15,6 +15,11 @@ module.exports = [
         handler: users.createUser
     },
     {
+        method: 'PATCH', 
+        path: `${url}/userKey`,
+        handler: users.updateKey
+    },
+    {
         method: 'DELETE',
         path: '/users',
         handler: users.deleteUser

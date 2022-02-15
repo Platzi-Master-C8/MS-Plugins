@@ -21,7 +21,6 @@ const server = Hapi.server({
     cors: {
       origin: origins,
       additionalHeaders: ['userKey'],
-      // additionalExposedHeaders: ['userKey'],
     },
   }
 })
@@ -29,7 +28,6 @@ const server = Hapi.server({
 // Initializing Server
 async function init() {
   try {
-    console.log(config.dbUser, config.dbPwd, config.dbCollectionName)
     await server.register({
       plugin: hapiMongo,
       options: {

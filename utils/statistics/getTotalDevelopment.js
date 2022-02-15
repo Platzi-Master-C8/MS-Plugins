@@ -1,3 +1,6 @@
+const secondsToMinutes = require('../secondsToMinutes')
+const getColor = require('../getColor')
+
 module.exports = function getTotalDevelopment(arrayDocData) {
     languagesIndex = arrayDocData.findIndex(element => element[0] == 'languages')
 
@@ -7,7 +10,8 @@ module.exports = function getTotalDevelopment(arrayDocData) {
         totalDevelopment += element.time
     })
     
-    
+    //pass minutes to seconds
+    totalDevelopment = secondsToMinutes(totalDevelopment)
 
     return totalDevelopment
 }

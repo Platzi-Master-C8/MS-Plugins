@@ -54,6 +54,32 @@ async function createUser (req, h) {
     
 }
 
+// PATCH /users/userKey
+async function updateKey (req, h) {
+    const userKey = req.headers.userkey
+    
+    try {
+        let user = await req.mongo.db.collection('users').findOne( { key: userKey } )
+        if(!user) {
+            throw "error in get a user";
+        }
+        const newKey = createKey( user.name + user.email )
+        user.key = newKey
+
+        const updateUserData = await req.mongo.db.collection('users').replaceOne(  { key: userKey }, user)
+
+
+        return {
+            message: 'successfully saved Data',
+            newKey: newKey
+        }
+    } catch(error) {
+        console.log(error)
+        return error
+    }
+    
+}
+
 // DELETE /users
 async function deleteUser (req, h) {
     //1.- validate Data
@@ -77,6 +103,7 @@ async function deleteUser (req, h) {
 
 module.exports = {
     getUser,
-    createUser,  
+    createUser,
+    updateKey,
     deleteUser
 }
