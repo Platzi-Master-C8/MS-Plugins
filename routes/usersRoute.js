@@ -7,16 +7,31 @@ module.exports = [
     {
         method: 'GET',
         path: `${url}`,
+        config: {
+            auth: {
+                strategy: 'auth0_jwt'
+            }
+        },
         handler: users.getUser
     },
     {
         method: 'POST', 
         path: `${url}`,
+        config: {
+            auth: {
+                strategy: 'auth0_jwt'
+            }
+        },
         handler: users.createUser
     },
     {
         method: 'PATCH', 
         path: `${url}/userKey`,
+        config: {
+            auth: {
+                strategy: 'auth0_jwt'
+            }
+        },
         handler: users.updateKey
     },
     {

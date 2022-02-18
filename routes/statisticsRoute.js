@@ -6,6 +6,11 @@ const { url } = require('../utils/mainRoute');
 module.exports = [
     {
         method: 'GET',
+        config: {
+            auth: {
+                strategy: 'auth0_jwt'
+            }
+        },
         path: `${url}/{userId}/statistics`,
         handler: statistics.getStatistics
     },

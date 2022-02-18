@@ -6,6 +6,7 @@ module.exports = function getWorkspaces(arrayDocData) {
     languagesIndex = arrayDocData.findIndex(element => element[0] == 'languages')
 
     let newData = []
+
     
     arrayDocData[languagesIndex][1].forEach(statistics => {
 

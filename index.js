@@ -8,9 +8,18 @@ const statisticsRoutes = require('./routes/statisticsRoute');
 const projectsRoutes = require('./routes/projectsRoute');
 const configurationsRoute = require('./routes/configurationsRoute');
 
+const Jwt = require('@hapi/jwt');
+
+
+
 const origins = [
   '*',
 ]
+
+const dataBases = {
+  own: 0,
+  tracking: 1
+}
 
 
 // Server definition
@@ -28,24 +37,61 @@ const server = Hapi.server({
 // Initializing Server
 async function init() {
   try {
+
+  
+
     await server.register({
       plugin: hapiMongo,
-      options: {
-        url: `mongodb+srv://${config.dbUser}:${config.dbPwd}@cluster0.7kiey.mongodb.net/${config.dbCollectionName}`,
-        settings: {
-          useUnifiedTopology: true
+      options: [
+        // own dataBase
+        {
+          url: `mongodb+srv://${config.ownDbUser}:${config.ownDbPwd}@cluster0.7kiey.mongodb.net/${config.ownDbCollectionName}`,
+          settings: {
+            useUnifiedTopology: true
+          },
+          decorate: true
         },
-        decorate: true
+        // tracking Data base
+        {
+          url: `mongodb+srv://${config.trackingDbUser}:${config.trackingDbPwd}@cluster0.nyfug.mongodb.net/${config.trackingDbCollectionName}?retryWrites=true&w=majority`,
+          settings: {
+            useUnifiedTopology: true
+          },
+          decorate: true
+        },
+      ]
+    });
+
+    await server.register(Jwt);
+    
+    server.auth.strategy('auth0_jwt', 'jwt', {
+      keys: "supersecretkey",
+      verify: {
+        aud: 'https://platzimaster.us.auth0.com/api/v2/',
+        iss: 'https://platzimaster.us.auth0.com/',
+        sub: false,
+        // exp: false,
+      },
+      validate: (artifacts, request, h) => {
+        // console.log(artifacts.decoded.payload);
+        return {
+          isValid: true,
+          // credentials: { user: artifacts.decoded.payload.user }
+        };
       },
     });
 
     server.route(usersRoutes)
     server.route(statisticsRoutes)
-    server.route(projectsRoutes)
-    server.route(configurationsRoute)
+
+    // Deprecated routes
+    // server.route(projectsRoutes)
+    // server.route(configurationsRoute)
 
 
     await server.start()
+    
+    
     console.log(`Server launched at: ${server.info.uri}`)
 
   } catch (error) {
@@ -55,3 +101,6 @@ async function init() {
 }
 
 init()
+
+
+module.exports = { dataBases }

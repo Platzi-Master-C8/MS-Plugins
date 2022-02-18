@@ -1,5 +1,7 @@
 'use strict'
 
+const config = require('../config/index').config;
+const { response } = require('@hapi/hapi/lib/validation');
 const { statisticsMock } = require('../utils/mocks/statistics.mock');
 const getTotalDevelopment = require('../utils/statistics/getTotalDevelopment');
 const getTotalLanguages = require('../utils/statistics/getTotalLanguages');
@@ -10,27 +12,33 @@ async function getStatistics (req, h) {
     const userId = req.params.userId
     try {
         const ObjectID = req.mongo.ObjectID;
-        const statisticsDoc = await req.mongo.db.collection('statistics').findOne( { userId: new ObjectID(userId) } )
+        const statisticsDoc = await req.mongo.db[config.own].collection('statistics').findOne( { userId: new ObjectID(userId) } )
         
         if(!statisticsDoc) {
             throw "error in get statistics";
         }
         
         const statisticsDocArr = Object.entries(statisticsDoc)
-      
-        let statisticsLenguage = getTotalLanguages(statisticsDocArr)
-        let statisticsDevelopment = getTotalDevelopment(statisticsDocArr)
-        let statisticsWorkspaces = getWorkspaces(statisticsDocArr)
-        
-
-        const data = {
-            languages: statisticsLenguage,
-            workspaces: statisticsWorkspaces,
-            totalDevelopment: statisticsDevelopment,
-            lastTracking: statisticsDoc.lastTracking
+        let data
+        let languagesIndex = statisticsDocArr.findIndex(element => element[0] == 'languages')
+        console.log(statisticsDocArr[languagesIndex])
+        if(statisticsDocArr[languagesIndex][1].length != 0) {
+            let statisticsLenguage = getTotalLanguages(statisticsDocArr)
+            let statisticsDevelopment = getTotalDevelopment(statisticsDocArr)
+            let statisticsWorkspaces = getWorkspaces(statisticsDocArr)
+            
+    
+            data = {
+                languages: statisticsLenguage,
+                workspaces: statisticsWorkspaces,
+                totalDevelopment: statisticsDevelopment,
+                lastTracking: statisticsDoc.lastTracking
+            }
+    
         }
-
-        return data
+        
+        let response = data ? data : "you don't have statistics yet"
+        return response
         
     } catch(error) {
         console.log(error)
@@ -47,7 +55,7 @@ async function updateStatistics (req, h) {
 
     try {
         const ObjectID = req.mongo.ObjectID
-        let findUserByKey = await req.mongo.db.collection('users').find({ key: userKey }).project({ name: false, email: false, key: false })
+        let findUserByKey = await req.mongo.db[config.own].collection('users').find({ key: userKey }).project({ name: false, email: false, key: false })
         const userByKey = await findUserByKey.next()
 
         if ( ( userByKey == null ) || ( userByKey._id != userId ) ) { 
@@ -57,7 +65,7 @@ async function updateStatistics (req, h) {
             throw 'add body data to update the information'
         }
         
-        const statisticsDoc = await req.mongo.db.collection('statistics').findOne({ userId: new ObjectID(userId) }) 
+        const statisticsDoc = await req.mongo.db[config.own].collection('statistics').findOne({ userId: new ObjectID(userId) }) 
         let statisticsDocArr = await Object.entries(statisticsDoc)
         
         let statisticsIndex = statisticsDocArr.findIndex((element) => element[0] == "languages")
@@ -100,7 +108,7 @@ async function updateStatistics (req, h) {
            
      
 
-        const updateStatistics = await req.mongo.db.collection('statistics').replaceOne( { userId: new ObjectID(userId) }, Object.fromEntries(statisticsDocArr))
+        const updateStatistics = await req.mongo.db[config.own].collection('statistics').replaceOne( { userId: new ObjectID(userId) }, Object.fromEntries(statisticsDocArr))
 
         return `statistics updated ${updateStatistics}`
 
@@ -122,13 +130,13 @@ async function createStatistics (req, h) {
 
     try {
         const ObjectID = req.mongo.ObjectID
-        let findUserByKey = await req.mongo.db.collection('users').find({ key: userKey }).project({ name: false, email: false, key: false })
+        let findUserByKey = await req.mongo.db[config.own].collection('users').find({ key: userKey }).project({ name: false, email: false, key: false })
         const userByKey = await findUserByKey.next()
 
         if ( userByKey._id != userId ) { 
             throw 'invalid credentials'
         }
-        const createStatistics = await req.mongo.db.collection('statistics').replaceOne(
+        const createStatistics = await req.mongo.db[config.own].collection('statistics').replaceOne(
             {
                 userId: new ObjectID(userId)
             }, { userId: new ObjectID(userId), ...statisticsMock })

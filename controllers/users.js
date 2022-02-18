@@ -1,15 +1,29 @@
 'use strict'
 
+const config = require('../config/index').config;
 const createKey = require('../utils/createKey');
 const { configBaseSchema } = require('../models/configurations');
 const { staticsBaseSchema } = require('../models/statistics');
 const { projectsBaseSchema } = require('../models/projects');
+const Jwt = require('@hapi/jwt');
+const parseProvider = require('../utils/auth/parseProvider');
+const decodeJWT = require('../utils/auth/decodeJWT');
+
+
 
 // GET /users
 async function getUser (req, h) {
-    const userKey = req.headers.userkey
+    let jwtPayloadDecoded = decodeJWT(req.headers.authorization)
+    const { name, email, picture, sub } = jwtPayloadDecoded
+   
+    let loginProv = sub ? parseProvider(sub) : 'other provider'
+
     try {
-        const user = await req.mongo.db.collection('users').findOne( { key: userKey } )
+        const user = await req.mongo.db[config.own].collection('users').findOne( { 
+            name: name,
+            email: email,
+            sub: loginProv
+        })
         if(!user) {
             throw "error in get a user";
         }
@@ -20,30 +34,42 @@ async function getUser (req, h) {
         console.log(error)
         return(error)
     }
- 
+
 }
 
 // POST /users
 async function createUser (req, h) {
-    const data = req.payload
-    data.key = createKey( data.name + data.email )
-    
+    let jwtPayloadDecoded = decodeJWT(req.headers.authorization)
+    const { name, email, picture, sub } = jwtPayloadDecoded
+   
+    let loginProv = parseProvider(sub)
+
+
+    const data =  { 
+        name: name,
+        email: email,
+        photo: picture ? picture : 'none',
+        sub: sub ? loginProv : 'other provider'
+    }
+    data.key = createKey( name + email )
     try {
-        const findUser = await req.mongo.db.collection('users').findOne( 
+        const findUser = await req.mongo.db[config.own].collection('users').findOne( 
             { 
                 name: data.name,
-                email: data.email
+                email: data.email,
+                sub: data.sub
             }
         )
         if(findUser) {
             throw 'error, this user was created in the data base'
         }
-        
 
-        const saveUserData = await req.mongo.db.collection('users').insertOne(data)
-        const saveUserStatisticsData = await req.mongo.db.collection('statistics').insertOne( { userId: saveUserData.insertedId, ...staticsBaseSchema } )
-        const saveUserProjectsData = await req.mongo.db.collection('projects').insertOne( { userId: saveUserData.insertedId, ...projectsBaseSchema } )
-        const saveUserConfigData = await req.mongo.db.collection('configurations').insertOne( { userId: saveUserData.insertedId, ...configBaseSchema } )
+        const saveUserData = await req.mongo.db[config.own].collection('users').insertOne(data)
+        const saveUserStatisticsData = await req.mongo.db[config.own].collection('statistics').insertOne( { userId: saveUserData.insertedId, ...staticsBaseSchema } )
+        
+        // deprecated collections
+        // const saveUserProjectsData = await req.mongo.db[config.own].collection('projects').insertOne( { userId: saveUserData.insertedId, ...projectsBaseSchema } )
+        // const saveUserConfigData = await req.mongo.db[config.own].collection('configurations').insertOne( { userId: saveUserData.insertedId, ...configBaseSchema } )
 
 
         return 'successfully saved Data'
@@ -56,17 +82,28 @@ async function createUser (req, h) {
 
 // PATCH /users/userKey
 async function updateKey (req, h) {
-    const userKey = req.headers.userkey
+    let jwtPayloadDecoded = decodeJWT(req.headers.authorization)
+    const { name, email, sub } = jwtPayloadDecoded
+    let loginProv = sub ? parseProvider(sub) : 'other provider'
+
     
     try {
-        let user = await req.mongo.db.collection('users').findOne( { key: userKey } )
+        let user = await req.mongo.db[config.own].collection('users').findOne( { 
+            name: name,
+            email: email,
+            sub: loginProv
+        } )
         if(!user) {
             throw "error in get a user";
         }
         const newKey = createKey( user.name + user.email )
         user.key = newKey
 
-        const updateUserData = await req.mongo.db.collection('users').replaceOne(  { key: userKey }, user)
+        const updateUserData = await req.mongo.db[config.own].collection('users').replaceOne( { 
+            name: name,
+            email: email,
+            sub: loginProv
+        }, user)
 
 
         return {
@@ -90,9 +127,9 @@ async function deleteUser (req, h) {
     }
 
     try {
-        if(typeof key == 'object' && Object.keys(key).length > 0) {
-            const result = await req.mongo.db.collection('users').deleteOne( key )
-        }
+        // if(typeof key == 'object' && Object.keys(key).length > 0) {
+        //     const result = await req.mongo.db[config.own].collection('users').deleteOne( key )
+        // }
     } catch (error) {
         
     }

@@ -6,6 +6,7 @@ module.exports = function getTotalDevelopment(arrayDocData) {
 
     let totalDevelopment = 0;
 
+
     arrayDocData[languagesIndex][1].forEach((element) => {
         totalDevelopment += element.time
     })

@@ -2,7 +2,7 @@
 
 
 const staticsBaseSchema = {
-    langueages: [ ],
+    languages: [ ],
     development: { totalTime: 0 },
     os: [ ],
     lastTracking: ' '

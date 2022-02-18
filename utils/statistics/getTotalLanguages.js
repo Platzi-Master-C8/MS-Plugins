@@ -7,6 +7,7 @@ module.exports = function getTotalLanguages(arrayDocData) {
 
     let newData = []
     
+
     arrayDocData[languagesIndex][1].forEach(statistics => {
         let  newDataIndex = newData.findIndex(element => {
             // set new Language name for the current stadistic

@@ -23,6 +23,7 @@
   "dependencies": {
     "@hapi/basic": "^6.0.0",
     "@hapi/hapi": "^20.2.1",
+    "@hapi/jwt": "^2.1.0",
     "cors": "^2.8.5",
     "dotenv": "^14.1.0",
     "hapi-mongodb": "^10.0.3",

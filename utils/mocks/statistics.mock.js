@@ -1,19 +1,77 @@
 const statisticsMock = {
     lastTracking: new Date(),
     languages: [
-      { name: 'JS', time: 12.5 },
-      { name: 'Rust', time: 25 },
-      { name: 'php', time: 25 },
-      { name: 'Java', time: 12.5 },
-      { name: 'Python', time: 25 }
+      { 
+        lan: 'JS',
+        fileName: 'HelloWorld.js',
+        workspace: 'preprocessors',
+        os: 'windows',
+        time: 150, 
+        stamps: {
+          start: new Date(),
+          end: new Date()
+        } 
+      },
+      { 
+        lan: 'PHP', 
+        fileName: 'HelloWorld.php',
+        workspace: 'preprocessors',
+        os: 'windows',
+        time: 125, 
+        stamps: {
+          start: new Date(),
+          end: new Date()
+        } 
+      },
+      { 
+        lan: 'html', 
+        fileName: 'index.html',
+        workspace: 'preprocessors',
+        os: 'windows',
+        time: 800, 
+        stamps: {
+          start: new Date(),
+          end: new Date()
+        } 
+      },
+      { 
+        lan: 'css', 
+        fileName: 'styles.css',
+        workspace: 'preprocessors',
+        os: 'windows',
+        time: 500, 
+        stamps: {
+          start: new Date(),
+          end: new Date()
+        } 
+      },
+      { 
+        lan: 'py', 
+        fileName: 'main.py',
+        workspace: 'preprocessors',
+        os: 'windows',
+        time: 753, 
+        stamps: {
+          start: new Date(),
+          end: new Date()
+        } 
+      },
+      { 
+        lan: 'py', 
+        fileName: 'data.py',
+        workspace: 'preprocessors',
+        os: 'windows',
+        time: 900, 
+        stamps: {
+          start: new Date(),
+          end: new Date()
+        } 
+      }
     ],
-    development: { totalTime: 52545 },
-    os: [
-      { name: 'windows', time: 545 },
-      { name: 'linux', time: 545 },
-      { name: 'mac', time: 545 }
-    ]
+    development: { totalTime: 0 },
+    os: [ ]
 }
 
 
 module.exports = { statisticsMock }
+
