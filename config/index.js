@@ -10,7 +10,10 @@ const config = {
   trackingDbUser: process.env.TRACKING_DB_USER,
   trackingDbPwd: process.env.TRACKING_DB_PASSWORD,
   trackingDbCollectionName: process.env.TRACKING_DB_COLLECTION,
-  tracking: 1
+  tracking: 1,
+
+  authSecret: process.env.AUTH_SECRET,
+
 }
 
 module.exports = {

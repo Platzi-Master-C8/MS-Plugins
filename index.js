@@ -24,7 +24,7 @@ const dataBases = {
 
 // Server definition
 const server = Hapi.server({
-  port: process.env.PORT || 3000,
+  port: process.env.PORT || 3005,
   host: '0.0.0.0',
   routes: {
     cors: {
@@ -65,9 +65,12 @@ async function init() {
     await server.register(Jwt);
     
     server.auth.strategy('auth0_jwt', 'jwt', {
-      keys: "supersecretkey",
+      keys: {
+        uri: config.authSecret,
+      },
       verify: {
-        aud: 'https://platzimaster.us.auth0.com/api/v2/',
+        // aud: 'https://platzimaster.us.auth0.com/api/v2/',
+        aud: false,
         iss: 'https://platzimaster.us.auth0.com/',
         sub: false,
         // exp: false,
