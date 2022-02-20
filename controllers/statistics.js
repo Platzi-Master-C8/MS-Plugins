@@ -15,7 +15,7 @@ async function getStatistics (req, h) {
         const statisticsDoc = await req.mongo.db[config.own].collection('statistics').findOne( { userId: new ObjectID(userId) } )
         
         if(!statisticsDoc) {
-            throw "error in get statistics";
+            throw Boom.badRequest("error in get statistics");
         }
         
         const statisticsDocArr = Object.entries(statisticsDoc)
@@ -59,10 +59,11 @@ async function updateStatistics (req, h) {
         const userByKey = await findUserByKey.next()
 
         if ( ( userByKey == null ) || ( userByKey._id != userId ) ) { 
-            throw 'invalid credentials'
+            throw Boom.badRequest("invalid credentials");
+            
         }
         if(!reqPayload) {
-            throw 'add body data to update the information'
+            throw Boom.badRequest("add body data to update the information");
         }
         
         const statisticsDoc = await req.mongo.db[config.own].collection('statistics').findOne({ userId: new ObjectID(userId) }) 
@@ -134,7 +135,7 @@ async function createStatistics (req, h) {
         const userByKey = await findUserByKey.next()
 
         if ( userByKey._id != userId ) { 
-            throw 'invalid credentials'
+            throw Boom.badRequest("invalid credentials");
         }
         const createStatistics = await req.mongo.db[config.own].collection('statistics').replaceOne(
             {

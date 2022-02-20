@@ -8,7 +8,7 @@ const { projectsBaseSchema } = require('../models/projects');
 const Jwt = require('@hapi/jwt');
 const parseProvider = require('../utils/auth/parseProvider');
 const decodeJWT = require('../utils/auth/decodeJWT');
-
+const Boom = require('@hapi/boom');
 
 
 // GET /users
@@ -25,7 +25,7 @@ async function getUser (req, h) {
             sub: loginProv
         })
         if(!user) {
-            throw "error in get a user";
+            throw Boom.badRequest("error in get a user");
         }
 
         return user
@@ -43,14 +43,13 @@ async function createUser (req, h) {
     const { name, email, picture, sub } = jwtPayloadDecoded
    
     let loginProv = parseProvider(sub)
-
-
     const data =  { 
         name: name,
         email: email,
         photo: picture ? picture : 'none',
         sub: sub ? loginProv : 'other provider'
     }
+
     data.key = createKey( name + email )
     try {
         const findUser = await req.mongo.db[config.own].collection('users').findOne( 
@@ -60,8 +59,8 @@ async function createUser (req, h) {
                 sub: data.sub
             }
         )
-        if(findUser) {
-            throw 'error, this user was created in the data base'
+        if(findUser) {            
+            throw Boom.badRequest("error, this user was created in the data base");
         }
 
         const saveUserData = await req.mongo.db[config.own].collection('users').insertOne(data)
@@ -93,8 +92,8 @@ async function updateKey (req, h) {
             email: email,
             sub: loginProv
         } )
-        if(!user) {
-            throw "error in get a user";
+        if(!user) { 
+            throw Boom.badRequest("error in get a user");
         }
         const newKey = createKey( user.name + user.email )
         user.key = newKey
