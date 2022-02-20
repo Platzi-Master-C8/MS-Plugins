@@ -6,6 +6,7 @@ const { statisticsMock } = require('../utils/mocks/statistics.mock');
 const getTotalDevelopment = require('../utils/statistics/getTotalDevelopment');
 const getTotalLanguages = require('../utils/statistics/getTotalLanguages');
 const getWorkspaces = require('../utils/statistics/getWorkspaces');
+const Boom = require('@hapi/boom');
 
 // GET {userId}/statistics
 async function getStatistics (req, h) {
@@ -36,8 +37,11 @@ async function getStatistics (req, h) {
             }
     
         }
-        
-        let response = data ? data : "you don't have statistics yet"
+        const error = Boom.badRequest("you don't have statistics yet");
+        // error.output.statusCode = 204 
+        // error.output.payload.message = "you don't have statistics yet"
+        // error.output.payload.error = "Bad Request"
+        let response = data ? data : error
         return response
         
     } catch(error) {
