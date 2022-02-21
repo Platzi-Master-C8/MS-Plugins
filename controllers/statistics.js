@@ -3,6 +3,7 @@
 const config = require('../config/index').config;
 const { response } = require('@hapi/hapi/lib/validation');
 const { statisticsMock } = require('../utils/mocks/statistics.mock');
+const getDaylyDevelopment = require('../utils/statistics/getDaylyDevelopment');
 const getTotalDevelopment = require('../utils/statistics/getTotalDevelopment');
 const getTotalLanguages = require('../utils/statistics/getTotalLanguages');
 const getWorkspaces = require('../utils/statistics/getWorkspaces');
@@ -22,14 +23,16 @@ async function getStatistics (req, h) {
         const statisticsDocArr = Object.entries(statisticsDoc)
         let data
         let languagesIndex = statisticsDocArr.findIndex(element => element[0] == 'languages')
-        console.log(statisticsDocArr[languagesIndex])
+        // console.log(statisticsDocArr[languagesIndex])
         if(statisticsDocArr[languagesIndex][1].length != 0) {
+            let statisticsDaylyDev =  getDaylyDevelopment(statisticsDocArr)
             let statisticsLenguage = getTotalLanguages(statisticsDocArr)
             let statisticsDevelopment = getTotalDevelopment(statisticsDocArr)
             let statisticsWorkspaces = getWorkspaces(statisticsDocArr)
             
     
             data = {
+                daylyDevelopment: statisticsDaylyDev,
                 languages: statisticsLenguage,
                 workspaces: statisticsWorkspaces,
                 totalDevelopment: statisticsDevelopment,
