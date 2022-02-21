@@ -15,6 +15,11 @@ module.exports = [
         handler: users.getUser
     },
     {
+        method: 'GET',
+        path: `${url}/id`,
+        handler: users.getUserId
+    },
+    {
         method: 'POST', 
         path: `${url}`,
         config: {

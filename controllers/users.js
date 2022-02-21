@@ -37,6 +37,27 @@ async function getUser (req, h) {
 
 }
 
+// GET /users/id
+async function getUserId (req, h) {
+    const userKey = req.headers.userkey
+
+    try {
+        const user = await req.mongo.db[config.own].collection('users').findOne( { 
+            key: userKey
+        })
+        if(!user) {
+            throw Boom.badRequest("error in get a user");
+        }
+
+        return user._id
+        
+    } catch(error) {
+        console.log(error)
+        return(error)
+    }
+
+}
+
 // POST /users
 async function createUser (req, h) {
     let jwtPayloadDecoded = decodeJWT(req.headers.authorization)
@@ -139,6 +160,7 @@ async function deleteUser (req, h) {
 
 module.exports = {
     getUser,
+    getUserId,
     createUser,
     updateKey,
     deleteUser
