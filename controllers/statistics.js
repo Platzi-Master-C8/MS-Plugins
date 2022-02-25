@@ -1,7 +1,6 @@
 'use strict'
 
 const config = require('../config/index').config;
-const { response } = require('@hapi/hapi/lib/validation');
 const { statisticsMock } = require('../utils/mocks/statistics.mock');
 const getDaylyDevelopment = require('../utils/statistics/getDaylyDevelopment');
 const getTotalDevelopment = require('../utils/statistics/getTotalDevelopment');
@@ -61,17 +60,22 @@ async function updateStatistics (req, h) {
     const userKey = req.headers.userkey
 
     try {
+
+        if(!reqPayload) {
+            throw Boom.badRequest("add body data to update the information");
+        }
+
         const ObjectID = req.mongo.ObjectID
+
+        //add statistics in own db
         let findUserByKey = await req.mongo.db[config.own].collection('users').find({ key: userKey }).project({ name: false, email: false, key: false })
         const userByKey = await findUserByKey.next()
 
         if ( ( userByKey == null ) || ( userByKey._id != userId ) ) { 
-            throw Boom.badRequest("invalid credentials");
+            throw Boom.badRequest("invalid credentials in own db");
             
         }
-        if(!reqPayload) {
-            throw Boom.badRequest("add body data to update the information");
-        }
+       
         
         const statisticsDoc = await req.mongo.db[config.own].collection('statistics').findOne({ userId: new ObjectID(userId) }) 
         let statisticsDocArr = await Object.entries(statisticsDoc)
@@ -116,9 +120,20 @@ async function updateStatistics (req, h) {
            
      
 
-        const updateStatistics = await req.mongo.db[config.own].collection('statistics').replaceOne( { userId: new ObjectID(userId) }, Object.fromEntries(statisticsDocArr))
+        const updateStatisticsInOwnDb = await req.mongo.db[config.own].collection('statistics').replaceOne( { userId: new ObjectID(userId) }, Object.fromEntries(statisticsDocArr))
 
-        return `statistics updated ${updateStatistics}`
+        // add statistics in tracking db
+        let findUserByKeyInTrackingDb = await req.mongo.db[config.tracking].collection('users').find({ key: userKey }).project({ name: false, email: false, key: false })
+        const userByKeyInTrackingDb = await findUserByKeyInTrackingDb.next()
+
+        if ( ( userByKeyInTrackingDb == null ) || ( userByKeyInTrackingDb._id != userId ) ) { 
+            throw Boom.badRequest("invalid credentials in tracking db");
+            
+        }
+        console.log(userByKeyInTrackingDb, statisticsDocArr)
+        const updateStatisticsInTrackingDb = await req.mongo.db[config.tracking].collection('statistics').replaceOne( { userId: new ObjectID(userId) }, Object.fromEntries(statisticsDocArr))
+       
+        return `statistics updated ${updateStatisticsInOwnDb}`
 
 
 

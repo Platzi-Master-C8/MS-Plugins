@@ -62,9 +62,12 @@ async function getUserId (req, h) {
 async function createUser (req, h) {
     let jwtPayloadDecoded = decodeJWT(req.headers.authorization)
     const { name, email, picture, sub } = jwtPayloadDecoded
+
+    let userDocId
+    let usetStatisticsDocId
    
     let loginProv = parseProvider(sub)
-    const data =  { 
+    let data =  { 
         name: name,
         email: email,
         photo: picture ? picture : 'none',
@@ -73,19 +76,38 @@ async function createUser (req, h) {
 
     data.key = createKey( name + email )
     try {
-        const findUser = await req.mongo.db[config.own].collection('users').findOne( 
+        //add data in own db 
+        const findUserInOwnDb = await req.mongo.db[config.own].collection('users').findOne( 
             { 
                 name: data.name,
                 email: data.email,
                 sub: data.sub
             }
         )
-        if(findUser) {            
-            throw Boom.badRequest("error, this user was created in the data base");
+        if(findUserInOwnDb) {            
+            throw Boom.badRequest("error, this user was created in own data base");
+        } else if (!findUserInOwnDb){
+            const saveUserOwnDb = await req.mongo.db[config.own].collection('users').insertOne(data)
+            const saveUserStatisticsOwnDb = await req.mongo.db[config.own].collection('statistics').insertOne( { userId: saveUserOwnDb.insertedId, ...staticsBaseSchema } )
+            userDocId = saveUserOwnDb.insertedId
+            usetStatisticsDocId = saveUserStatisticsOwnDb.insertedId
         }
 
-        const saveUserData = await req.mongo.db[config.own].collection('users').insertOne(data)
-        const saveUserStatisticsData = await req.mongo.db[config.own].collection('statistics').insertOne( { userId: saveUserData.insertedId, ...staticsBaseSchema } )
+        //add data in tracking db
+        data._id = userDocId
+        const findUserInTrackingDb = await req.mongo.db[config.tracking].collection('users').findOne( 
+            { 
+                name: data.name,
+                email: data.email,
+                sub: data.sub
+            }
+        )
+        if(findUserInTrackingDb){
+            throw Boom.badRequest("error, this user was created in tacking data base");
+        }else if(!findUserInTrackingDb) {
+            const saveUserTrackingDb = await req.mongo.db[config.tracking].collection('users').insertOne(data)
+            const saveUserStatisticsTrackingDb = await req.mongo.db[config.tracking].collection('statistics').insertOne( {  ...staticsBaseSchema, userId: userDocId, _id: usetStatisticsDocId }  )
+        }
         
         // deprecated collections
         // const saveUserProjectsData = await req.mongo.db[config.own].collection('projects').insertOne( { userId: saveUserData.insertedId, ...projectsBaseSchema } )
@@ -100,6 +122,8 @@ async function createUser (req, h) {
     
 }
 
+
+
 // PATCH /users/userKey
 async function updateKey (req, h) {
     let jwtPayloadDecoded = decodeJWT(req.headers.authorization)
@@ -108,23 +132,42 @@ async function updateKey (req, h) {
 
     
     try {
-        let user = await req.mongo.db[config.own].collection('users').findOne( { 
+
+        //change key in own db
+        let userInOwnDb = await req.mongo.db[config.own].collection('users').findOne( { 
             name: name,
             email: email,
             sub: loginProv
         } )
-        if(!user) { 
-            throw Boom.badRequest("error in get a user");
+        if(!userInOwnDb) { 
+            throw Boom.badRequest("error in get a user in own db");
         }
-        const newKey = createKey( user.name + user.email )
-        user.key = newKey
+        let newKey = createKey( userInOwnDb.name + userInOwnDb.email )
+        userInOwnDb.key = newKey
 
-        const updateUserData = await req.mongo.db[config.own].collection('users').replaceOne( { 
+        const updateUserDataInOwnDb = await req.mongo.db[config.own].collection('users').replaceOne( { 
             name: name,
             email: email,
             sub: loginProv
-        }, user)
+        }, userInOwnDb)
 
+        // change key in tracking db
+        let userInTrackingDb = await req.mongo.db[config.tracking].collection('users').findOne( { 
+            name: name,
+            email: email,
+            sub: loginProv
+        } )
+        if(!userInTrackingDb) { 
+            throw Boom.badRequest("error in get a user in tracking db");
+        }
+        // const newKey = createKey( userInTrackingDb.name + userInTrackingDb.email )
+        userInTrackingDb.key = newKey
+
+        const updateUserDataInTrackingDb = await req.mongo.db[config.tracking].collection('users').replaceOne( { 
+            name: name,
+            email: email,
+            sub: loginProv
+        }, userInTrackingDb)
 
         return {
             message: 'successfully saved Data',

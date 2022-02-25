@@ -16,11 +16,6 @@ const origins = [
   '*',
 ]
 
-const dataBases = {
-  own: 0,
-  tracking: 1
-}
-
 
 // Server definition
 const server = Hapi.server({
@@ -37,9 +32,6 @@ const server = Hapi.server({
 // Initializing Server
 async function init() {
   try {
-
-  
-
     await server.register({
       plugin: hapiMongo,
       options: [
@@ -59,6 +51,14 @@ async function init() {
           },
           decorate: true
         },
+        // second test data base
+        // {
+        //   url: `mongodb+srv://${config.ownDbUser}:${config.ownDbPwd}@cluster0.7kiey.mongodb.net/${config.secondOwnDbCollectionName}`,
+        //   settings: {
+        //     useUnifiedTopology: true
+        //   },
+        //   decorate: true
+        // },
       ]
     });
 
