@@ -106,4 +106,3 @@ async function init() {
 init()
 
 
-module.exports = { dataBases }
